@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 
-public class CompletableFutureTest {
+public class ThenComposeTest {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public CompletableFuture<Integer> goodsPriceApi() {
@@ -19,6 +19,24 @@ public class CompletableFutureTest {
                 TimeUnit.SECONDS.sleep(5);
                 logger.info("goodsPriceApi success");
                 return 30000;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return null;
+            }
+        });
+    }
+
+    public CompletableFuture<Double> discountApi(Integer goodsPrice) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                logger.info("discountApi start");
+                TimeUnit.SECONDS.sleep(5);
+                logger.info("discountApi success");
+                if(goodsPrice>=30000){
+                    return goodsPrice - (goodsPrice * 0.4);
+                } else{
+                    return goodsPrice - (goodsPrice * 0.2);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 return null;
@@ -42,12 +60,12 @@ public class CompletableFutureTest {
 
     @Test
     public void orderApi() throws ExecutionException, InterruptedException {
-        CompletableFuture<Integer> goodsApiFuture = goodsPriceApi();
+        CompletableFuture<Double> goodsAndDiscountFuture = goodsPriceApi().thenCompose(this::discountApi);
         CompletableFuture<String> userApiFuture = userNameApi();
 
-        Integer goodsPrice = goodsApiFuture.get();
         String userName = userApiFuture.get();
+        Double goodsDiscountPrice = goodsAndDiscountFuture.get();
 
-        logger.info("username : " + userName + ", goodsPrice : " + goodsPrice);
+        logger.info("username : " + userName + ", goodsDiscountPrice : " + goodsDiscountPrice);
     }
 }

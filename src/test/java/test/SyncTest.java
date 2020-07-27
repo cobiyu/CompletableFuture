@@ -16,7 +16,7 @@ public class SyncTest {
         TimeUnit.SECONDS.sleep(5);
         logger.info("goodsPriceApi success");
 
-        return 29000;
+        return 30000;
     }
 
     public String userNameApi() throws InterruptedException {
@@ -28,7 +28,7 @@ public class SyncTest {
     }
 
     @Test
-    public void userNameAndGoodsApiTest() throws InterruptedException, ExecutionException {
+    public void orderApi() throws InterruptedException, ExecutionException {
         Integer goodsPrice = goodsPriceApi();
         String userName = userNameApi();
 
